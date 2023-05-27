@@ -1,0 +1,62 @@
+version: "3.8"
+
+volumes:
+  postgres-db:
+  redis:
+
+networks:
+  backend:
+    driver: bridge
+
+services:
+  app:
+    container_name: app
+    build:
+      context: docker/app
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    ports:
+      - ${APP_HOST_PORT}:${APP_CONTAINER_PORT}
+    volumes:
+      - .:/usr/src/app
+    command: air ./cmd/apiserver/main.go
+    networks:
+      - backend
+
+  db:
+    container_name: dr
+    build:
+      context: docker/db
+      dockerfile: Dockerfile
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_NAME=${DB_NAME}
+    ports:
+      - ${DB_HOST_PORT}:${DB_CONTAINER_PORT}
+    volumes:
+      - postgres-dr:/var/lib/postgresql/data
+    networks:
+      - backend
+
+  redis:
+    container_name: redis
+    build:
+      context: docker/redis
+      dockerfile: Dockerfile
+    ports:
+      - ${REDIS_HOST_PORT}:${REDIS_CONTAINER_PORT}
+    volumes:
+      - redis:/usr/local/etc/redis
+    networks:
+      - backend
+
+  stan:
+    container_name: stan
+    build:
+      context: docker/stan
+      dockerfile: Dockerfile
+    networks:
+      - backend
+

@@ -1,0 +1,2 @@
+FROM nats-streaming:alpine
+
