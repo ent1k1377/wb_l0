@@ -25,7 +25,7 @@ services:
       - backend
 
   db:
-    container_name: dr
+    container_name: db
     build:
       context: docker/db
       dockerfile: Dockerfile
@@ -36,7 +36,7 @@ services:
     ports:
       - ${DB_HOST_PORT}:${DB_CONTAINER_PORT}
     volumes:
-      - postgres-dr:/var/lib/postgresql/data
+      - postgres-db:/var/lib/postgresql/data
     networks:
       - backend
 
