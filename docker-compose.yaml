@@ -10,7 +10,7 @@ networks:
 
 services:
   app:
-    container_name: app
+    container_name: ${APP_CONTAINER_NAME}
     build:
       context: docker/app
       dockerfile: Dockerfile
@@ -20,19 +20,23 @@ services:
       - ${APP_HOST_PORT}:${APP_CONTAINER_PORT}
     volumes:
       - .:/usr/src/app
-    command: air ./cmd/apiserver/main.go
+    command: sh -c "sleep 10 && air ./cmd/apiserver/main.go"
+    depends_on:
+      - db
+      - redis
+      - stan
     networks:
       - backend
 
   db:
-    container_name: db
+    container_name: ${DB_CONTAINER_NAME}
     build:
       context: docker/db
       dockerfile: Dockerfile
     environment:
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
-      - POSTGRES_NAME=${DB_NAME}
+      - POSTGRES_DB=${DB_NAME}
     ports:
       - ${DB_HOST_PORT}:${DB_CONTAINER_PORT}
     volumes:

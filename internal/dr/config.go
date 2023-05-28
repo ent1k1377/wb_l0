@@ -10,13 +10,17 @@ type Config struct {
 }
 
 func NewConfig() *Config {
+	conn := fmt.Sprintf("%s://%s:%s@%s:%s/%s?sslmode=%s",
+		os.Getenv("DB"),
+		os.Getenv("DB_USER"),
+		os.Getenv("DB_PASSWORD"),
+		os.Getenv("DB_CONTAINER_NAME"),
+		os.Getenv("DB_CONTAINER_PORT"),
+		os.Getenv("DB_NAME"),
+		os.Getenv("DB_SSLMODE"),
+	)
+
 	return &Config{
-		DatabaseURL: fmt.Sprintf("host=%s port=%s dbname=%s user=%s password=%s sslmode=disable",
-			os.Getenv("DB_HOST"),
-			os.Getenv("DB_HOST_PORT"),
-			os.Getenv("DB_NAME"),
-			os.Getenv("DB_USER"),
-			os.Getenv("DB_PASSWORD"),
-		),
+		DatabaseURL: conn,
 	}
 }
