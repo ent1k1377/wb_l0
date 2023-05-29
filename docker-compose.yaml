@@ -20,7 +20,7 @@ services:
       - ${APP_HOST_PORT}:${APP_CONTAINER_PORT}
     volumes:
       - .:/usr/src/app
-    command: sh -c "sleep 10 && air ./cmd/apiserver/main.go"
+    command: sh -c "sleep 5 && air ./cmd/apiserver/main.go"
     depends_on:
       - db
       - redis
@@ -61,12 +61,13 @@ services:
     build:
       context: docker/stan
       dockerfile: Dockerfile
-    command: [ "nats-streaming-server", "-p", "4222", "-m", "8222", "-store", "redis://redis:6379" ]
+    command: [ "nats-streaming-server", "-cid", "${STAN_CLUSTER_ID}", "-p", "${STAN_CONTAINER_PORT}", "-m", "${STAN_MONITORING_CONTAINER_PORT}", "-store", "file", "-dir", "store" ]
     ports:
-      - "4222:4222"
-      - "8222:8222"
+      - ${STAN_HOST_PORT}:${STAN_CONTAINER_PORT}
+      - ${STAN_MONITORING_HOST_PORT}:${STAN_MONITORING_CONTAINER_PORT}
+    volumes:
+      - ./store:/store
     depends_on:
       - redis
     networks:
       - backend
-

@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"github.com/joho/godotenv"
-	"log"
 	"os"
 	"os/exec"
 	"time"
@@ -12,7 +11,8 @@ import (
 func main() {
 	err := godotenv.Load()
 	if err != nil {
-		log.Fatal("Не удалось загрузить файл .env")
+		fmt.Println("Не удалось загрузить файл .env")
+		return
 	}
 
 	args := func() []string {
@@ -24,8 +24,6 @@ func main() {
 		}
 		return tmp
 	}()
-
-	fmt.Println(args, len(args))
 
 	if len(args) == 1 && args[0] == "-c" {
 		creationScript()
@@ -46,12 +44,11 @@ func creationScript() {
 		currenTime.Minute(),
 		currenTime.Second(),
 	)
-	fmt.Println(dumpName)
 	if err := createDump(dumpName); err != nil {
 		fmt.Println(err)
 		return
 	}
-	fmt.Println("Дамп базы данных успешно создан.")
+	fmt.Printf("Дамп базы данных успешно создан c именем %s.", dumpName)
 
 	if err := copyContainerToHost(dumpName); err != nil {
 		fmt.Println(err)
@@ -100,7 +97,7 @@ func recoveryScript(dumpName string) {
 		fmt.Println(err)
 		return
 	}
-	fmt.Println("Востановление базы данных прошло успешно.")
+	fmt.Println("Восстановление базы данных прошло успешно.")
 }
 
 func copyHostToContainer(dumpName string) error {

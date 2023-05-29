@@ -8,8 +8,9 @@ import (
 )
 
 type DR struct {
-	config *Config
-	db     *sql.DB
+	config          *Config
+	db              *sql.DB
+	orderRepository *OrderRepository
 }
 
 func New(config *Config) *DR {
@@ -58,5 +59,15 @@ func (d *DR) Open() error {
 }
 
 func (d *DR) Close() {
+	d.db.Close()
+}
 
+func (d *DR) Order() *OrderRepository {
+	if d.orderRepository != nil {
+		return d.orderRepository
+	}
+	d.orderRepository = &OrderRepository{
+		dr: d,
+	}
+	return d.orderRepository
 }
