@@ -2,8 +2,8 @@
 
 ## Dump
 #### Создание дампа и восстановление базы данных, с помощью команды bash dump -key.<br> Ключи: 
-- -c
-- -r filename.sql
+- `-c`
+- `-r filename.sql`
 #### Пример запросов:
 - `bash dump.sh -c`
 - `bash dump.sh -r dump_date_2023-05-28_23-17-28.sql`
