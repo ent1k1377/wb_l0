@@ -26,7 +26,7 @@ func (d *DR) Open() error {
 	}
 	defer db.Close()
 
-	// Вызов хранимой функцииq
+	// Вызов хранимой функции
 	rows, err := db.Query("SELECT * FROM public.get_all_orders()")
 	if err != nil {
 		log.Fatal("Ошибка при выполнении запроса: ", err, db)

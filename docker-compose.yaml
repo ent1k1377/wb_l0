@@ -45,7 +45,7 @@ services:
       - backend
 
   redis:
-    container_name: redis
+    container_name: ${REDIS_CONTAINER_NAME}
     build:
       context: docker/redis
       dockerfile: Dockerfile
@@ -57,7 +57,7 @@ services:
       - backend
 
   stan:
-    container_name: stan
+    container_name: ${STAN_CONTAINER_NAME}
     build:
       context: docker/stan
       dockerfile: Dockerfile
