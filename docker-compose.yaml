@@ -61,6 +61,12 @@ services:
     build:
       context: docker/stan
       dockerfile: Dockerfile
+    command: [ "nats-streaming-server", "-p", "4222", "-m", "8222", "-store", "redis://redis:6379" ]
+    ports:
+      - "4222:4222"
+      - "8222:8222"
+    depends_on:
+      - redis
     networks:
       - backend
 
