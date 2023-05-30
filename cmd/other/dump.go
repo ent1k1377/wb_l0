@@ -27,6 +27,8 @@ func main() {
 
 	if len(args) == 1 && args[0] == "-c" {
 		creationScript()
+	} else if len(args) == 1 && args[0] == "-d" {
+		deletionScript()
 	} else if len(args) == 2 && args[0] == "-r" && args[1] != "" {
 		recoveryScript(args[1])
 	} else {
@@ -48,7 +50,7 @@ func creationScript() {
 		fmt.Println(err)
 		return
 	}
-	fmt.Printf("Дамп базы данных успешно создан c именем %s.", dumpName)
+	fmt.Printf("Дамп базы данных успешно создан c именем %s.\n", dumpName)
 
 	if err := copyContainerToHost(dumpName); err != nil {
 		fmt.Println(err)
@@ -60,8 +62,6 @@ func creationScript() {
 func createDump(dumpName string) error {
 	cmd := exec.Command("docker", "exec", os.Getenv("DB_CONTAINER_NAME"),
 		"pg_dump", "-U", os.Getenv("DB_USER"), "-d", os.Getenv("DB_NAME"), "-f", dumpName)
-
-	fmt.Println(cmd.Args, os.Getenv("DB_USER"), 123)
 
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
@@ -121,6 +121,28 @@ func restoreDB(dumpName string) error {
 			os.Getenv("DB_NAME"),
 			dumpName,
 		))
+
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+
+	if err := cmd.Run(); err != nil {
+		return err
+	}
+	return nil
+}
+
+func deletionScript() {
+	if err := deletePublicSchema(); err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println("База данных успешно очищена")
+}
+
+func deletePublicSchema() error {
+	cmd := exec.Command("docker", "exec", os.Getenv("DB_CONTAINER_NAME"),
+		"psql", "-U", os.Getenv("DB_USER"), "-d", os.Getenv("DB_NAME"),
+		"-c", "DROP SCHEMA public CASCADE; CREATE SCHEMA public;")
 
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr

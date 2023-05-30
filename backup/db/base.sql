@@ -17,6 +17,22 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
+-- Name: public; Type: SCHEMA; Schema: -; Owner: root
+--
+
+-- *not* creating schema, since initdb creates it
+
+
+ALTER SCHEMA public OWNER TO root;
+
+--
+-- Name: SCHEMA public; Type: COMMENT; Schema: -; Owner: root
+--
+
+COMMENT ON SCHEMA public IS '';
+
+
+--
 -- Name: get_all_orders(); Type: FUNCTION; Schema: public; Owner: root
 --
 
@@ -30,30 +46,6 @@ $$;
 
 
 ALTER FUNCTION public.get_all_orders() OWNER TO root;
-
---
--- Name: get_all_orders1(); Type: FUNCTION; Schema: public; Owner: root
---
-
-CREATE FUNCTION public.get_all_orders1() RETURNS TABLE(order_uid character varying, track_number character varying, date_created timestamp without time zone)
-    LANGUAGE plpgsql IMMUTABLE
-    AS $$
-DECLARE
-	order_data RECORD;
-BEGIN
-	FOR order_data IN SELECT o.order_uid, o.track_number, o.date_created FROM orders o
-	LOOP
-		order_uid := order_data.order_uid;
-		track_number := order_data.track_number;
-		date_created := order_data.date_created;
-		RETURN NEXT;
-	END LOOP;
-RETURN;
-END;
-$$;
-
-
-ALTER FUNCTION public.get_all_orders1() OWNER TO root;
 
 SET default_tablespace = '';
 
@@ -246,6 +238,13 @@ ALTER TABLE ONLY public.orders
 
 ALTER TABLE ONLY public.orders
     ADD CONSTRAINT orders_payment_id_fkey FOREIGN KEY (payment_id) REFERENCES public.payment(payment_id);
+
+
+--
+-- Name: SCHEMA public; Type: ACL; Schema: -; Owner: root
+--
+
+REVOKE USAGE ON SCHEMA public FROM PUBLIC;
 
 
 --
