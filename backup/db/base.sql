@@ -70,12 +70,26 @@ CREATE TABLE public.delivery (
 ALTER TABLE public.delivery OWNER TO root;
 
 --
+-- Name: delivery_delivery_id_seq; Type: SEQUENCE; Schema: public; Owner: root
+--
+
+ALTER TABLE public.delivery ALTER COLUMN delivery_id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME public.delivery_delivery_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
 -- Name: items; Type: TABLE; Schema: public; Owner: root
 --
 
 CREATE TABLE public.items (
     item_id integer NOT NULL,
-    order_uid character varying(255),
+    order_uid integer,
     chrt_id integer,
     track_number character varying(255),
     price integer,
@@ -93,11 +107,25 @@ CREATE TABLE public.items (
 ALTER TABLE public.items OWNER TO root;
 
 --
+-- Name: items_item_id_seq; Type: SEQUENCE; Schema: public; Owner: root
+--
+
+ALTER TABLE public.items ALTER COLUMN item_id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME public.items_item_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
 -- Name: orders; Type: TABLE; Schema: public; Owner: root
 --
 
 CREATE TABLE public.orders (
-    order_uid character varying(255) NOT NULL,
+    order_uid integer NOT NULL,
     track_number character varying(255),
     entry character varying(255),
     delivery_id integer,
@@ -114,6 +142,20 @@ CREATE TABLE public.orders (
 
 
 ALTER TABLE public.orders OWNER TO root;
+
+--
+-- Name: orders_order_uid_seq; Type: SEQUENCE; Schema: public; Owner: root
+--
+
+ALTER TABLE public.orders ALTER COLUMN order_uid ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME public.orders_order_uid_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
 
 --
 -- Name: payment; Type: TABLE; Schema: public; Owner: root
@@ -137,14 +179,27 @@ CREATE TABLE public.payment (
 ALTER TABLE public.payment OWNER TO root;
 
 --
+-- Name: payment_payment_id_seq; Type: SEQUENCE; Schema: public; Owner: root
+--
+
+ALTER TABLE public.payment ALTER COLUMN payment_id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME public.payment_payment_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
 -- Data for Name: delivery; Type: TABLE DATA; Schema: public; Owner: root
 --
 
 COPY public.delivery (delivery_id, name, phone, zip, city, address, region, email) FROM stdin;
-1	Test Testov	+9720000000	2639809	Kiryat Mozkin	Ploshad Mira 15	Kraiot	test@gmail.com
-2	Jane Smith	+9722222222	9876543	Haifa	Ocean Avenue 10	Carmel	jane@example.com
-4	Michael Brown	+9724444444	7654321	Netanya	Beach Road 20	Sela	michael@example.com
-3	Anna Johnson	+9723333333	5432198	Jerusalem	Park Avenue 5	Givat Ram	anna@example.com
+11	qw	\N	\N	\N	\N	\N	\N
+12	Test Testov	+9720000000	2639809	Kiryat Mozkin	Ploshad Mira 15	Kraiot	test@gmail.com
+13	Test Testov	+9720000000	2639809	Kiryat Mozkin	Ploshad Mira 15	Kraiot	test@gmail.com
 \.
 
 
@@ -153,10 +208,7 @@ COPY public.delivery (delivery_id, name, phone, zip, city, address, region, emai
 --
 
 COPY public.items (item_id, order_uid, chrt_id, track_number, price, rid, name, sale, size, total_price, nm_id, brand, status) FROM stdin;
-1	b563feb7b2b84b6test	9934930	WBILMTESTTRACK	453	ab4219087a764ae0btest	Mascaras	30	0	317	2389212	Vivienne Sabo	202
-2	c895ghe7a4d12f3test	5678234	HAIFATESTTRACK	120	ab4219087a764ae0btest	Lipsticks	10	0	500	3298412	MAC	201
-4	f1c2e3d4a5b6test	1234567	NETATESTTRACK	80	ab4219087a764ae0btest	Foundation	15	0	120	7890123	Oréal	201
-3	e9b85fca2d61456test	7890123	JERUTESTTRACK	60	ab4219087a764ae0btest	Eyeliners	5	0	150	4567890	Maybelline	200
+1	1	9934930	WBILMTESTTRACK	453	ab4219087a764ae0btest	Mascaras	30	0	317	2389212	Vivienne Sabo	202
 \.
 
 
@@ -165,10 +217,7 @@ COPY public.items (item_id, order_uid, chrt_id, track_number, price, rid, name, 
 --
 
 COPY public.orders (order_uid, track_number, entry, delivery_id, payment_id, locale, internal_signature, customer_id, delivery_service, shardkey, sm_id, date_created, oof_shard) FROM stdin;
-b563feb7b2b84b6test	WBILMTESTTRACK	WBIL	1	1	en		test	meest	9	99	2021-11-26 06:22:19	1
-c895ghe7a4d12f3test	HAIFATESTTRACK	HAIF	2	2	en		test	dhl	6	88	2021-11-27 09:10:00	2
-f1c2e3d4a5b6test	NETATESTTRACK	NETA	4	4	en		test	fedex	8	66	2021-11-27 17:00:00	4
-e9b85fca2d61456test	JERUTESTTRACK	JERU	3	3	en		test	ups	3	77	2021-11-27 13:30:00	3
+1	WBILMTESTTRACK	WBIL	13	4	en		test	meest	9	99	2021-11-26 06:22:19	1
 \.
 
 
@@ -177,11 +226,37 @@ e9b85fca2d61456test	JERUTESTTRACK	JERU	3	3	en		test	ups	3	77	2021-11-27 13:30:00
 --
 
 COPY public.payment (payment_id, transaction, request_id, currency, provider, amount, payment_dt, bank, delivery_cost, goods_total, custom_fee) FROM stdin;
-1	b563feb7b2b84b6test		USD	wbpay	1817	1637907727	alpha	1500	317	0
-2	c895ghe7a4d12f3test		EUR	paynet	2500	1637912000	beta	2000	500	0
-4	f1c2e3d4a5b6test		USD	stripe	920	1637918000	delta	800	120	0
-3	e9b85fca2d61456test		GBP	paypal	750	1637915000	gamma	600	150	0
+3	b563feb7b2b84b6test		USD	wbpay	1817	1637907727	alpha	1500	317	0
+4	b563feb7b2b84b6test		USD	wbpay	1817	1637907727	alpha	1500	317	0
 \.
+
+
+--
+-- Name: delivery_delivery_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
+--
+
+SELECT pg_catalog.setval('public.delivery_delivery_id_seq', 13, true);
+
+
+--
+-- Name: items_item_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
+--
+
+SELECT pg_catalog.setval('public.items_item_id_seq', 1, true);
+
+
+--
+-- Name: orders_order_uid_seq; Type: SEQUENCE SET; Schema: public; Owner: root
+--
+
+SELECT pg_catalog.setval('public.orders_order_uid_seq', 1, true);
+
+
+--
+-- Name: payment_payment_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
+--
+
+SELECT pg_catalog.setval('public.payment_payment_id_seq', 4, true);
 
 
 --
@@ -205,7 +280,7 @@ ALTER TABLE ONLY public.items
 --
 
 ALTER TABLE ONLY public.orders
-    ADD CONSTRAINT orders_pkey PRIMARY KEY (order_uid);
+    ADD CONSTRAINT orders_pkey PRIMARY KEY (order_uid) INCLUDE (order_uid);
 
 
 --
@@ -214,14 +289,6 @@ ALTER TABLE ONLY public.orders
 
 ALTER TABLE ONLY public.payment
     ADD CONSTRAINT payment_pkey PRIMARY KEY (payment_id);
-
-
---
--- Name: items items_order_uid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
---
-
-ALTER TABLE ONLY public.items
-    ADD CONSTRAINT items_order_uid_fkey FOREIGN KEY (order_uid) REFERENCES public.orders(order_uid);
 
 
 --
