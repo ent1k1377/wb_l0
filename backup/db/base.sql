@@ -36,7 +36,7 @@ COMMENT ON SCHEMA public IS '';
 -- Name: get_all_orders(); Type: FUNCTION; Schema: public; Owner: root
 --
 
-CREATE FUNCTION public.get_all_orders() RETURNS TABLE(order_uid character varying, track_number character varying, date_created timestamp without time zone)
+CREATE FUNCTION public.get_all_orders() RETURNS TABLE(order_uid integer, track_number character varying, date_created timestamp without time zone)
     LANGUAGE plpgsql
     AS $$
 BEGIN

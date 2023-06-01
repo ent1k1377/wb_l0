@@ -2,7 +2,8 @@ package apiserver
 
 import (
 	"database/sql"
-	"github.com/ent1k1377/wb_l0/internal/messaging"
+	"github.com/ent1k1377/wb_l0/internal/messaging/natsstreaming"
+	"github.com/ent1k1377/wb_l0/internal/messaging/natsstreaming/messager"
 	"github.com/ent1k1377/wb_l0/internal/store/sqlstore"
 	"github.com/nats-io/stan.go"
 	"net/http"
@@ -22,14 +23,16 @@ func Start(config *Config) error {
 	}
 
 	store := sqlstore.New(db)
-	stan := messaging.New(conn)
-	server := newServer(store, *stan)
+	stan := natsstreaming.New(*conn)
+	server := newServer(store, stan)
+
+	messager.StartListeningPublisher(store, stan)
 
 	return http.ListenAndServe(config.BindAddr, server)
 }
 
 func newDB(dbURL string) (*sql.DB, error) {
-	db, err := sql.Open("postgres", dbURL)
+	db, err := sql.Open(os.Getenv("DB"), dbURL)
 	if err != nil {
 		return nil, err
 	}
@@ -37,7 +40,6 @@ func newDB(dbURL string) (*sql.DB, error) {
 	if err := db.Ping(); err != nil {
 		return nil, err
 	}
-
 	return db, nil
 }
 

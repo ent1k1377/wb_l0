@@ -1,15 +1,6 @@
 package messaging
 
-import (
-	"github.com/nats-io/stan.go"
-)
-
-type Stan struct {
-	conn *stan.Conn
-}
-
-func New(conn *stan.Conn) *Stan {
-	return &Stan{
-		conn: conn,
-	}
+type Messenger interface {
+	Publish(topic string, data []byte) error
+	Subscribe(topic string, cb func(data []byte)) (unsub func() error, err error)
 }
