@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"github.com/ent1k1377/wb_l0/internal/messaging/natsstreaming"
 	"github.com/ent1k1377/wb_l0/internal/messaging/natsstreaming/messager"
-	"github.com/ent1k1377/wb_l0/internal/store/sqlstore"
+	"github.com/ent1k1377/wb_l0/internal/storage/sqlstorage"
 	"github.com/nats-io/stan.go"
 	"net/http"
 	"os"
@@ -22,7 +22,7 @@ func Start(config *Config) error {
 		return err
 	}
 
-	store := sqlstore.New(db)
+	store := sqlstorage.New(db)
 	stan := natsstreaming.New(*conn)
 	server := newServer(store, stan)
 

@@ -3,18 +3,18 @@ package apiserver
 import (
 	"github.com/ent1k1377/wb_l0/internal/messaging"
 	"github.com/ent1k1377/wb_l0/internal/messaging/natsstreaming/messager"
-	"github.com/ent1k1377/wb_l0/internal/store"
+	"github.com/ent1k1377/wb_l0/internal/storage"
 	"net/http"
 	"strconv"
 )
 
 type server struct {
 	router    *http.ServeMux
-	store     store.Store
+	store     storage.Storage
 	messenger messaging.Messenger
 }
 
-func newServer(store store.Store, messenger messaging.Messenger) *server {
+func newServer(store storage.Storage, messenger messaging.Messenger) *server {
 	s := &server{
 		router:    http.NewServeMux(),
 		store:     store,
@@ -30,7 +30,8 @@ func (s *server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *server) configureRouter() {
-	s.router.HandleFunc("/create_order", s.createOrder())
+	s.router.HandleFunc("/create-order", s.createOrder())
+	s.router.HandleFunc("/get-all-orders", s.getAllOrders())
 }
 
 func (s *server) createOrder() http.HandlerFunc {
@@ -51,6 +52,13 @@ func (s *server) createOrder() http.HandlerFunc {
 			return
 		}
 
+		w.WriteHeader(http.StatusOK)
+	}
+}
+
+func (s *server) getAllOrders() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("{response: jopa}"))
 		w.WriteHeader(http.StatusOK)
 	}
 }

@@ -1,4 +1,4 @@
-package store
+package storage
 
 import "github.com/ent1k1377/wb_l0/internal/model"
 

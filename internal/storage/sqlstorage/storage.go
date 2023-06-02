@@ -1,22 +1,22 @@
-package sqlstore
+package sqlstorage
 
 import (
 	"database/sql"
-	"github.com/ent1k1377/wb_l0/internal/store"
+	"github.com/ent1k1377/wb_l0/internal/storage"
 )
 
-type Store struct {
+type Storage struct {
 	db              *sql.DB
 	orderRepository *OrderRepository
 }
 
-func New(db *sql.DB) *Store {
-	return &Store{
+func New(db *sql.DB) *Storage {
+	return &Storage{
 		db: db,
 	}
 }
 
-func (s *Store) Order() store.OrderRepository {
+func (s *Storage) Order() storage.OrderRepository {
 	if s.orderRepository != nil {
 		return s.orderRepository
 	}

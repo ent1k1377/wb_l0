@@ -1,9 +1,9 @@
-package store
+package storage
 
 import (
 	_ "github.com/lib/pq"
 )
 
-type Store interface {
+type Storage interface {
 	Order() OrderRepository
 }

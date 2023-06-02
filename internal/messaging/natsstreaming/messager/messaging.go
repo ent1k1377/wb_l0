@@ -2,7 +2,7 @@ package messager
 
 import (
 	"github.com/ent1k1377/wb_l0/internal/messaging/natsstreaming"
-	"github.com/ent1k1377/wb_l0/internal/store"
+	"github.com/ent1k1377/wb_l0/internal/storage"
 )
 
 const (
@@ -14,19 +14,19 @@ type Messaging interface {
 }
 
 type Message struct {
-	store     store.Store
+	store     storage.Storage
 	stan      *natsstreaming.Stan
 	messaging []Messaging
 }
 
-func StartListeningPublisher(store store.Store, stan *natsstreaming.Stan) {
+func StartListeningPublisher(store storage.Storage, stan *natsstreaming.Stan) {
 	messages := New(store, stan).messaging
 	for _, m := range messages {
 		m.StartListening()
 	}
 }
 
-func New(store store.Store, stan *natsstreaming.Stan) *Message {
+func New(store storage.Storage, stan *natsstreaming.Stan) *Message {
 	return &Message{
 		store:     store,
 		stan:      stan,
@@ -34,7 +34,7 @@ func New(store store.Store, stan *natsstreaming.Stan) *Message {
 	}
 }
 
-func initMessages(store store.Store, stan *natsstreaming.Stan) []Messaging {
+func initMessages(store storage.Storage, stan *natsstreaming.Stan) []Messaging {
 	messages := []Messaging{
 		&OrderMessaging{store: store, stan: stan},
 	}

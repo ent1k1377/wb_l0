@@ -5,13 +5,13 @@ import (
 	"fmt"
 	"github.com/ent1k1377/wb_l0/internal/messaging/natsstreaming"
 	"github.com/ent1k1377/wb_l0/internal/model"
-	"github.com/ent1k1377/wb_l0/internal/store"
+	"github.com/ent1k1377/wb_l0/internal/storage"
 	"log"
 	"strconv"
 )
 
 type OrderMessaging struct {
-	store store.Store
+	store storage.Storage
 	stan  *natsstreaming.Stan
 }
 
