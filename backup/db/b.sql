@@ -33,19 +33,19 @@ COMMENT ON SCHEMA public IS '';
 
 
 --
--- Name: get_all_orders_id(); Type: FUNCTION; Schema: public; Owner: root
+-- Name: get_all_orders(); Type: FUNCTION; Schema: public; Owner: root
 --
 
-CREATE FUNCTION public.get_all_orders_id() RETURNS TABLE(order_uid integer)
+CREATE FUNCTION public.get_all_orders() RETURNS TABLE(order_uid integer, track_number character varying, date_created timestamp without time zone)
     LANGUAGE plpgsql
     AS $$
 BEGIN
-	RETURN QUERY SELECT o.order_uid FROM orders o;
+	RETURN QUERY SELECT o.order_uid, o.track_number, o.date_created FROM orders o;
 END;
 $$;
 
 
-ALTER FUNCTION public.get_all_orders_id() OWNER TO root;
+ALTER FUNCTION public.get_all_orders() OWNER TO root;
 
 --
 -- Name: get_order(integer); Type: FUNCTION; Schema: public; Owner: root
@@ -195,6 +195,36 @@ $$;
 
 
 ALTER FUNCTION public.insert_payment(transaction text, request_id text, currency text, provider text, amount numeric, payment_dt integer, bank text, delivery_cost numeric, goods_total numeric, custom_fee numeric) OWNER TO root;
+
+--
+-- Name: insert_q(); Type: FUNCTION; Schema: public; Owner: root
+--
+
+CREATE FUNCTION public.insert_q() RETURNS integer
+    LANGUAGE plpgsql
+    AS $$DECLARE
+	delivery_id INTEGER;
+	payment_id INTEGER;
+	order_id INTEGER;
+	item_id INTEGER;
+BEGIN
+	START TRANSACTION; -- Start the transaction explicitly
+
+	delivery_id := insert_delivery('John Doe', '123456789', '12345', 'New York', '123 Main St', 'Region', 'john@example.com');
+	payment_id := insert_payment('123456', '789', 'USD', 'Provider', 100.0, 32412321, 'Bank', 10.0, 90.0, 5.0);
+	order_id := insert_order('123ABC', 'Entry', delivery_id, payment_id, 'en', 'signature', 123, 'Delivery Service', 'shardkey', 456, '2023-06-01', 'oof');
+	item_id := insert_item(order_id, 123, 'qwe', 45, 'eeee', 'rr', 30, 'qweea', 12, 23, 'nk', 200);
+
+	COMMIT; -- Commit the transaction
+	RETURN item_id;
+EXCEPTION
+	WHEN OTHERS THEN -- Catch any exceptions
+		ROLLBACK; -- Rollback the transaction
+		RAISE; -- Rethrow the exception
+END;$$;
+
+
+ALTER FUNCTION public.insert_q() OWNER TO root;
 
 SET default_tablespace = '';
 

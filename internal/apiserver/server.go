@@ -73,7 +73,7 @@ func (s *server) getOrder() http.HandlerFunc {
 		}
 
 		orderId := fmt.Sprintf("order_id_%d", id)
-		valueC, err := s.cache.Get(orderId)
+		order, err := s.cache.Get(orderId)
 		if err != nil {
 			value, err := s.storage.Order().Get(id)
 			if err != nil {
@@ -82,12 +82,11 @@ func (s *server) getOrder() http.HandlerFunc {
 				return
 			}
 			s.cache.Set(orderId, value, 0)
-
-			valueC, err = s.cache.Get(orderId)
+			order, err = s.cache.Get(orderId)
 		}
 
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(valueC))
+		w.Write([]byte(order))
 	}
 }
 

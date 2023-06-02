@@ -3,6 +3,7 @@ package sqlstorage
 import (
 	"database/sql"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/ent1k1377/wb_l0/internal/cache"
 	"github.com/ent1k1377/wb_l0/internal/model"
@@ -132,11 +133,13 @@ func (r OrderRepository) Get(id int) (string, error) {
 		return "", err
 	}
 	defer rows.Close()
+
 	order := &model.Order{}
 
 	order.Items = make([]model.Item, 0)
-
+	isEmpty := true
 	for rows.Next() {
+		isEmpty = false
 		item := model.Item{}
 		err := rows.Scan(
 			&order.Delivery.ID,
@@ -191,13 +194,17 @@ func (r OrderRepository) Get(id int) (string, error) {
 		order.Items = append(order.Items, item)
 	}
 
+	if isEmpty {
+		return "", errors.New("id not found")
+	}
+
 	if err := rows.Err(); err != nil {
 		return "", err
 	}
+
 	orderJson, err := json.Marshal(order)
 	if err != nil {
 		return "", err
 	}
-	fmt.Println(order, 123)
 	return string(orderJson), nil
 }
