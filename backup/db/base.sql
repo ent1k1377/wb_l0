@@ -346,7 +346,7 @@ ALTER TABLE public.payments ALTER COLUMN payment_id ADD GENERATED ALWAYS AS IDEN
 --
 
 COPY public.deliveries (delivery_id, name, phone, zip, city, address, region, email) FROM stdin;
-2	Test Testov	+9720000000	2639809	Kiryat Mozkin	Ploshad Mira 15	Kraiot	test@gmail.com
+3	Test Testov	+9720000000	2639809	Kiryat Mozkin	Ploshad Mira 15	Kraiot	test@gmail.com
 \.
 
 
@@ -356,7 +356,7 @@ COPY public.deliveries (delivery_id, name, phone, zip, city, address, region, em
 
 COPY public.items (item_id, order_uid, chrt_id, track_number, price, rid, name, sale, size, total_price, nm_id, brand, status) FROM stdin;
 1	1	9934930	WBILMTESTTRACK	453	ab4219087a764ae0btest	Mascaras	30	0	317	2389212	Vivienne Sabo	202
-2	1	23	WBILMTESTTRACK	453	ab4219087a764ae0btest	Mascaras	31	0	317	2389212	Vivienne Sabo	202
+2	1	9934930	WBILMTESTTRACK	453	ab4219087a764ae0btest	Mascaras	30	0	317	2389212	Vivienne Sabo	202
 \.
 
 
@@ -365,7 +365,7 @@ COPY public.items (item_id, order_uid, chrt_id, track_number, price, rid, name, 
 --
 
 COPY public.orders (order_uid, track_number, entry, delivery_id, payment_id, locale, internal_signature, customer_id, delivery_service, shardkey, sm_id, date_created, oof_shard) FROM stdin;
-1	jopa	BIILLLO	2	1	en		test	meest	9	99	2021-11-26 06:22:19	1
+1	jopa	BIILLLO	3	2	en		test	meest	9	99	2021-11-26 06:22:19	1
 \.
 
 
@@ -374,7 +374,7 @@ COPY public.orders (order_uid, track_number, entry, delivery_id, payment_id, loc
 --
 
 COPY public.payments (payment_id, transaction, request_id, currency, provider, amount, payment_dt, bank, delivery_cost, goods_total, custom_fee) FROM stdin;
-1	b563feb7b2b84b6test		USD	wbpay	1817	1637907727	alpha	1500	317	0
+2	b563feb7b2b84b6test		USD	wbpay	1817	1637907727	alpha	1500	317	0
 \.
 
 
@@ -382,28 +382,28 @@ COPY public.payments (payment_id, transaction, request_id, currency, provider, a
 -- Name: delivery_delivery_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
 --
 
-SELECT pg_catalog.setval('public.delivery_delivery_id_seq', 1, true);
+SELECT pg_catalog.setval('public.delivery_delivery_id_seq', 3, true);
 
 
 --
 -- Name: items_item_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
 --
 
-SELECT pg_catalog.setval('public.items_item_id_seq', 1, false);
+SELECT pg_catalog.setval('public.items_item_id_seq', 2, true);
 
 
 --
 -- Name: orders_order_uid_seq; Type: SEQUENCE SET; Schema: public; Owner: root
 --
 
-SELECT pg_catalog.setval('public.orders_order_uid_seq', 1, false);
+SELECT pg_catalog.setval('public.orders_order_uid_seq', 1, true);
 
 
 --
 -- Name: payment_payment_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
 --
 
-SELECT pg_catalog.setval('public.payment_payment_id_seq', 1, true);
+SELECT pg_catalog.setval('public.payment_payment_id_seq', 2, true);
 
 
 --

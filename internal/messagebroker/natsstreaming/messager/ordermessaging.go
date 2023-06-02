@@ -33,22 +33,23 @@ func (o *OrderMessaging) CreateOrder() {
 }
 
 func (o *OrderMessaging) handleOrderMessage(data []byte) {
-	var orderData model.Order
+	var orderData *model.Order
 	err := json.Unmarshal(data, &orderData)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 
-	err = o.store.Order().Create(&orderData)
+	err = o.store.Order().Create(orderData)
+
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 
 	orderId := fmt.Sprintf("order_id_%s", orderData.OrderUID)
 	fmt.Println(orderId)
 	err = o.cache.Set(orderId, string(data), 0)
-	if err != nil {
-		fmt.Println(err)
-	}
-
 	if err != nil {
 		fmt.Println(err)
 	}
