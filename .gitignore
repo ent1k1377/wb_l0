@@ -1,3 +1,4 @@
-.idea
-tmp
+/.idea/
+/tmp/
 /store/
+l0.txt

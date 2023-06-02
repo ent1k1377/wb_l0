@@ -1,24 +1,29 @@
 package apiserver
 
 import (
-	"github.com/ent1k1377/wb_l0/internal/messaging"
-	"github.com/ent1k1377/wb_l0/internal/messaging/natsstreaming/messager"
+	"fmt"
+	"github.com/ent1k1377/wb_l0/internal/cache"
+	"github.com/ent1k1377/wb_l0/internal/messagebroker"
+	"github.com/ent1k1377/wb_l0/internal/messagebroker/natsstreaming/messager"
 	"github.com/ent1k1377/wb_l0/internal/storage"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 type server struct {
-	router    *http.ServeMux
-	store     storage.Storage
-	messenger messaging.Messenger
+	router  *http.ServeMux
+	storage storage.Storage
+	broker  messagebroker.Broker
+	cache   cache.Cache
 }
 
-func newServer(store storage.Storage, messenger messaging.Messenger) *server {
+func newServer(storage storage.Storage, broker messagebroker.Broker, cache cache.Cache) *server {
 	s := &server{
-		router:    http.NewServeMux(),
-		store:     store,
-		messenger: messenger,
+		router:  http.NewServeMux(),
+		storage: storage,
+		broker:  broker,
+		cache:   cache,
 	}
 
 	s.configureRouter()
@@ -30,8 +35,9 @@ func (s *server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *server) configureRouter() {
-	s.router.HandleFunc("/create-order", s.createOrder())
-	s.router.HandleFunc("/get-all-orders", s.getAllOrders())
+	s.router.HandleFunc("/create-order/", s.createOrder())
+	s.router.HandleFunc("/get-order/", s.getOrder())
+	s.router.HandleFunc("/get-all-orders/", s.getAllOrders())
 }
 
 func (s *server) createOrder() http.HandlerFunc {
@@ -47,7 +53,7 @@ func (s *server) createOrder() http.HandlerFunc {
 		}
 
 		jsonData := []byte(r.Form.Get("order"))
-		err := s.messenger.Publish(strconv.Itoa(messager.OrderCreateOrder), jsonData)
+		err := s.broker.Publish(strconv.Itoa(messager.OrderCreateOrder), jsonData)
 		if err != nil {
 			return
 		}
@@ -56,9 +62,39 @@ func (s *server) createOrder() http.HandlerFunc {
 	}
 }
 
+func (s *server) getOrder() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+
+		id, err := strconv.Atoi(strings.TrimPrefix(r.URL.Path, "/get-order/"))
+		if err != nil {
+			http.Error(w, "id is not integer", http.StatusBadRequest)
+			return
+		}
+
+		orderId := fmt.Sprintf("order_id_%d", id)
+		valueC, err := s.cache.Get(orderId)
+		if err != nil {
+			value, err := s.storage.Order().Get(id)
+			if err != nil {
+				w.Write([]byte("{response: " + err.Error() + "}"))
+				w.WriteHeader(http.StatusNotFound)
+				return
+			}
+			s.cache.Set(orderId, value, 0)
+
+			valueC, err = s.cache.Get(orderId)
+		}
+
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(valueC))
+	}
+}
+
 func (s *server) getAllOrders() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("{response: jopa}"))
+		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("{response: jopa}"))
 	}
 }

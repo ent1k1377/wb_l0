@@ -3,7 +3,8 @@ package messager
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/ent1k1377/wb_l0/internal/messaging/natsstreaming"
+	"github.com/ent1k1377/wb_l0/internal/cache"
+	"github.com/ent1k1377/wb_l0/internal/messagebroker/natsstreaming"
 	"github.com/ent1k1377/wb_l0/internal/model"
 	"github.com/ent1k1377/wb_l0/internal/storage"
 	"log"
@@ -12,6 +13,7 @@ import (
 
 type OrderMessaging struct {
 	store storage.Storage
+	cache cache.Cache
 	stan  *natsstreaming.Stan
 }
 
@@ -31,7 +33,6 @@ func (o *OrderMessaging) CreateOrder() {
 }
 
 func (o *OrderMessaging) handleOrderMessage(data []byte) {
-	fmt.Println("create-order")
 	var orderData model.Order
 	err := json.Unmarshal(data, &orderData)
 	if err != nil {
@@ -40,6 +41,14 @@ func (o *OrderMessaging) handleOrderMessage(data []byte) {
 	}
 
 	err = o.store.Order().Create(&orderData)
+
+	orderId := fmt.Sprintf("order_id_%s", orderData.OrderUID)
+	fmt.Println(orderId)
+	err = o.cache.Set(orderId, string(data), 0)
+	if err != nil {
+		fmt.Println(err)
+	}
+
 	if err != nil {
 		fmt.Println(err)
 	}

@@ -2,15 +2,19 @@ package sqlstorage
 
 import (
 	"database/sql"
+	"encoding/json"
+	"fmt"
+	"github.com/ent1k1377/wb_l0/internal/cache"
 	"github.com/ent1k1377/wb_l0/internal/model"
 )
 
 type OrderRepository struct {
-	store *Storage
+	storage *Storage
+	cache   cache.Cache
 }
 
 func (r OrderRepository) Create(o *model.Order) error {
-	db := r.store.db
+	db := r.storage.db
 
 	tx, err := db.Begin()
 	if err != nil {
@@ -39,6 +43,7 @@ func (r OrderRepository) Create(o *model.Order) error {
 		return err
 	}
 
+	fmt.Println("create-order")
 	return nil
 }
 
@@ -119,4 +124,80 @@ func CreateItem(tx *sql.Tx, o *model.Order) error {
 	}
 
 	return nil
+}
+
+func (r OrderRepository) Get(id int) (string, error) {
+	rows, err := r.storage.db.Query("SELECT * FROM get_order($1)", id)
+	if err != nil {
+		return "", err
+	}
+	defer rows.Close()
+	order := &model.Order{}
+
+	order.Items = make([]model.Item, 0)
+
+	for rows.Next() {
+		item := model.Item{}
+		err := rows.Scan(
+			&order.Delivery.ID,
+			&order.Delivery.Name,
+			&order.Delivery.Phone,
+			&order.Delivery.Zip,
+			&order.Delivery.City,
+			&order.Delivery.Address,
+			&order.Delivery.Region,
+			&order.Delivery.Email,
+			&order.Payment.ID,
+			&order.Payment.Transaction,
+			&order.Payment.RequestID,
+			&order.Payment.Currency,
+			&order.Payment.Provider,
+			&order.Payment.Amount,
+			&order.Payment.PaymentDT,
+			&order.Payment.Bank,
+			&order.Payment.DeliveryCost,
+			&order.Payment.GoodsTotal,
+			&order.Payment.CustomFee,
+			&order.OrderUID,
+			&order.TrackNumber,
+			&order.Entry,
+			&order.Delivery.ID,
+			&order.Payment.ID,
+			&order.Locale,
+			&order.InternalSignature,
+			&order.CustomerID,
+			&order.DeliveryService,
+			&order.Shardkey,
+			&order.SmID,
+			&order.DateCreated,
+			&order.OofShard,
+			&item.ID,
+			&item.ChrtID,
+			&item.TrackNumber,
+			&item.Price,
+			&item.RID,
+			&item.Name,
+			&item.Sale,
+			&item.Size,
+			&item.TotalPrice,
+			&item.NmID,
+			&item.Brand,
+			&item.Status,
+		)
+		if err != nil {
+			return "", err
+		}
+
+		order.Items = append(order.Items, item)
+	}
+
+	if err := rows.Err(); err != nil {
+		return "", err
+	}
+	orderJson, err := json.Marshal(order)
+	if err != nil {
+		return "", err
+	}
+	fmt.Println(order, 123)
+	return string(orderJson), nil
 }

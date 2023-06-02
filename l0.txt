@@ -1,0 +1,71 @@
+4. В случае падения сервиса восстанавливать Кеш из Postgres
+
+• В канал могут закинуть что угодно, подумайте как избежать проблем
+из-за этого
+• Чтобы проверить работает ли подписка онлайн, сделайте себе
+отдельный скрипт, для публикации данных в канал
+• Подумайте как не терять данные в случае ошибок или проблем с
+сервисом
+
+Бонус задание
+1. Покройте сервис автотестами. Будет плюсик вам в карму�
+2. Устройте вашему сервису стресс тест, выясните на что он способен -
+воспользуйтесь утилитами WRK, Vegeta. Попробуйте оптимизировать код
+
+
+
+rows, err := r.storage.db.Query("SELECT * FROM get_order($1)", id)
+	if err != nil {
+		return "", err
+	}
+
+	order := &model.Order{}
+
+	for i, v := rows.Next() {
+		err := rows.Scan(
+			order.Delivery.ID,
+			order.Delivery.Name,
+			order.Delivery.Phone,
+			order.Delivery.Zip,
+			order.Delivery.Address,
+			order.Delivery.Region,
+			order.Delivery.Email,
+			order.Payment.ID,
+			order.Payment.Transaction,
+			order.Payment.RequestID,
+			order.Payment.Currency,
+			order.Payment.Provider,
+			order.Payment.Amount,
+			order.Payment.PaymentDT,
+			order.Payment.Bank,
+			order.Payment.DeliveryCost,
+			order.Payment.GoodsTotal,
+			order.Payment.CustomFee,
+			order.OrderUID,
+			order.TrackNumber,
+			order.Entry,
+			order.Delivery.ID,
+			order.Payment.ID,
+			order.Locale,
+			order.InternalSignature,
+			order.CustomerID,
+			order.DeliveryService,
+			order.Shardkey,
+			order.SmID,
+			order.DateCreated,
+			order.OofShard,
+			order.Items[0].ID,
+			order.Items[0].ChrtID,
+			order.Items[0].TrackNumber,
+			order.Items[0].Price,
+			order.Items[0].RID,
+			order.Items[0].Name,
+			order.Items[0].Sale,
+			order.Items[0].Size,
+			order.Items[0].TotalPrice,
+			order.Items[0].NmID,
+			order.Items[0].Brand,
+			order.Items[0].Status,
+		)
+
+	}

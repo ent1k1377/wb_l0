@@ -9,6 +9,7 @@ type Config struct {
 	BindAddr    string
 	DatabaseURL string
 	StanURL     string
+	RedisURL    string
 }
 
 func NewConfig() *Config {
@@ -25,10 +26,12 @@ func NewConfig() *Config {
 		os.Getenv("STAN_CONTAINER_NAME"),
 		os.Getenv("STAN_CONTAINER_PORT"),
 	)
+	redisURL := fmt.Sprintf("%s:%s", os.Getenv("REDIS_HOST"), os.Getenv("REDIS_HOST_PORT"))
 
 	return &Config{
 		BindAddr:    ":" + os.Getenv("APP_HOST_PORT"),
 		DatabaseURL: databaseURL,
 		StanURL:     stanURL,
+		RedisURL:    redisURL,
 	}
 }
