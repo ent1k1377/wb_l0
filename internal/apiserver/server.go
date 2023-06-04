@@ -68,7 +68,7 @@ func (s *server) getOrder() http.HandlerFunc {
 
 		id, err := strconv.Atoi(strings.TrimPrefix(r.URL.Path, "/get-order/"))
 		if err != nil {
-			http.Error(w, "id is not integer", http.StatusBadRequest)
+			http.Error(w, "{response: id is not integer}", http.StatusBadRequest)
 			return
 		}
 
@@ -93,7 +93,13 @@ func (s *server) getOrder() http.HandlerFunc {
 func (s *server) getAllOrders() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
+		res, err := s.storage.Order().GetAllOrdersId()
+		if err != nil {
+			w.Write([]byte("{response: " + err.Error() + "}"))
+			w.WriteHeader(http.StatusNotFound)
+			return
+		}
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("{response: jopa}"))
+		w.Write([]byte(res))
 	}
 }

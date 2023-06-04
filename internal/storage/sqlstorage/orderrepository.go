@@ -14,7 +14,7 @@ type OrderRepository struct {
 	cache   cache.Cache
 }
 
-func (r OrderRepository) Create(o *model.Order) error {
+func (r *OrderRepository) Create(o *model.Order) error {
 	db := r.storage.db
 
 	tx, err := db.Begin()
@@ -127,7 +127,7 @@ func CreateItem(tx *sql.Tx, o *model.Order) error {
 	return nil
 }
 
-func (r OrderRepository) Get(id int) (string, error) {
+func (r *OrderRepository) Get(id int) (string, error) {
 	rows, err := r.storage.db.Query("SELECT * FROM get_order($1)", id)
 	if err != nil {
 		return "", err
@@ -206,5 +206,25 @@ func (r OrderRepository) Get(id int) (string, error) {
 	if err != nil {
 		return "", err
 	}
+
 	return string(orderJson), nil
+}
+func (r *OrderRepository) GetAllOrdersId() (string, error) {
+	rows, err := r.storage.db.Query("SELECT * FROM get_all_orders_id()")
+	if err != nil {
+		return "", err
+	}
+	defer rows.Close()
+	res := "{ orders: {"
+	for rows.Next() {
+		var id int
+		err := rows.Scan(&id)
+		if err != nil {
+			return "", err
+		}
+		res += fmt.Sprintf("id: %d,", id)
+	}
+	res += "}}"
+
+	return res, nil
 }
