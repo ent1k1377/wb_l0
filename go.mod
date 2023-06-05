@@ -11,6 +11,7 @@ require (
 
 require (
 	github.com/gogo/protobuf v1.3.2 // indirect
+	github.com/golang/mock v1.6.0 // indirect
 	github.com/klauspost/compress v1.16.5 // indirect
 	github.com/nats-io/nats-server/v2 v2.9.17 // indirect
 	github.com/nats-io/nats-streaming-server v0.25.4 // indirect

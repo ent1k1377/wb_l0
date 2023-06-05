@@ -48,17 +48,22 @@ func (s *server) createOrder() http.HandlerFunc {
 		}
 
 		if r.ParseForm() != nil {
-			http.Error(w, "Failed to parse form data", http.StatusBadRequest)
+			s.Writer(w, []byte("{message: failed to parse form data}"), http.StatusBadRequest)
 			return
 		}
 
-		jsonData := []byte(r.Form.Get("order"))
-		err := s.broker.Publish(strconv.Itoa(messager.OrderCreateOrder), jsonData)
+		order := []byte(r.Form.Get("order"))
+		if len(order) == 0 {
+			s.Writer(w, []byte("{message: the order variable in the form is empty}"), http.StatusBadRequest)
+			return
+		}
+
+		err := s.broker.Publish(strconv.Itoa(messager.OrderCreateOrder), order)
 		if err != nil {
 			return
 		}
 
-		w.WriteHeader(http.StatusOK)
+		s.Writer(w, []byte("{message: order created successfully}"), http.StatusOK)
 	}
 }
 
@@ -68,7 +73,7 @@ func (s *server) getOrder() http.HandlerFunc {
 
 		id, err := strconv.Atoi(strings.TrimPrefix(r.URL.Path, "/get-order/"))
 		if err != nil {
-			http.Error(w, "{response: id is not integer}", http.StatusBadRequest)
+			s.Writer(w, []byte("{message: id is not integer}"), http.StatusBadRequest)
 			return
 		}
 
@@ -77,29 +82,31 @@ func (s *server) getOrder() http.HandlerFunc {
 		if err != nil {
 			value, err := s.storage.Order().Get(id)
 			if err != nil {
-				w.Write([]byte("{response: " + err.Error() + "}"))
-				w.WriteHeader(http.StatusNotFound)
+				s.Writer(w, []byte("{message: "+err.Error()+"}"), http.StatusNotFound)
 				return
 			}
 			s.cache.Set(orderId, value, 0)
 			order, err = s.cache.Get(orderId)
 		}
 
-		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(order))
+		s.Writer(w, []byte(order), http.StatusOK)
 	}
 }
 
 func (s *server) getAllOrders() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		res, err := s.storage.Order().GetAllOrdersId()
+
+		orderIds, err := s.storage.Order().GetAllOrdersId()
 		if err != nil {
-			w.Write([]byte("{response: " + err.Error() + "}"))
-			w.WriteHeader(http.StatusNotFound)
+			s.Writer(w, []byte("{message: "+err.Error()+"}"), http.StatusNotFound)
 			return
 		}
-		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(res))
+		s.Writer(w, []byte(orderIds), http.StatusOK)
 	}
+}
+
+func (s *server) Writer(w http.ResponseWriter, message []byte, httpStatus int) {
+	w.Write(message)
+	w.WriteHeader(httpStatus)
 }

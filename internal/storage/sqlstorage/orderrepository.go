@@ -215,16 +215,16 @@ func (r *OrderRepository) GetAllOrdersId() (string, error) {
 		return "", err
 	}
 	defer rows.Close()
-	res := "{ orders: {"
+	orderIds := "{ orders: ["
 	for rows.Next() {
 		var id int
 		err := rows.Scan(&id)
 		if err != nil {
 			return "", err
 		}
-		res += fmt.Sprintf("id: %d,", id)
+		orderIds += fmt.Sprintf(`"%d",`, id)
 	}
-	res += "}}"
+	orderIds += "]}"
 
-	return res, nil
+	return orderIds, nil
 }
