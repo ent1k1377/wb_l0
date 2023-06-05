@@ -89,7 +89,7 @@ URL: http://localhost:3000/get-order/2
 
 #### 3. Просмотр всех `id` заказов
 
-URL: `http://localhost:3000/get-all-orders`
+URL: http://localhost:3000/get-all-orders
 
 ## Иерархия
 
