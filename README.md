@@ -15,12 +15,81 @@ bash dump.sh -r base.sql
 
 3. **Проверка работы**
 ```bash
-curl http://localhost:3000/get-all-orders
+curl http://localhost:3000/get-all-orders/
 ```
 
 ## Возможности
 
-???
+#### 1. Создание заказа через `form url encoded` с ключом `order` и `value` 
+
+<details>
+  <summary>Показать JSON</summary>
+
+```json
+{
+  "order_uid": "39",
+  "track_number": "track",
+  "entry": "BIILLLO",
+  "delivery": {
+    "ID": 64,
+    "name": "Test Testov",
+    "phone": "+9720000000",
+    "zip": "2639809",
+    "city": "Kiryat Mozkin",
+    "address": "Ploshad Mira 15",
+    "region": "Kraiot",
+    "email": "test@gmail.com"
+  },
+  "payment": {
+    "ID": 44,
+    "transaction": "b563feb7b2b84b6test",
+    "request_id": "",
+    "currency": "USD",
+    "provider": "wbpay",
+    "amount": 1817,
+    "payment_dt": 1637907727,
+    "bank": "alpha",
+    "delivery_cost": 1500,
+    "goods_total": 317,
+    "custom_fee": 0
+  },
+  "items": [
+    {
+      "ID": 27,
+      "chrt_id": 9934930,
+      "track_number": "WBILMTESTTRACK",
+      "price": 453,
+      "rid": "ab4219087a764ae0btest",
+      "name": "Mascaras",
+      "sale": 30,
+      "size": "0",
+      "total_price": 317,
+      "nm_id": 2389212,
+      "brand": "Vivienne Sabo",
+      "status": 202
+    }
+  ],
+  "locale": "en",
+  "internal_signature": "",
+  "customer_id": "test",
+  "delivery_service": "meest",
+  "shardkey": "9",
+  "sm_id": 99,
+  "date_created": "2021-11-26T06:22:19Z",
+  "oof_shard": "1"
+}
+```
+
+</details>
+
+URL: http://localhost:3000/create-order/
+
+#### 2. Просмотр заказа по `id`
+URL: http://localhost:3000/get-order/2
+
+#### 3. Просмотр всех `id` заказов
+
+URL: `http://localhost:3000/get-all-orders`
 
 ## Иерархия
 

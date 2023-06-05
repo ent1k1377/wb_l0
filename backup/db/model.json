@@ -1,6 +1,6 @@
 {
   "order_uid": "39",
-  "track_number": "jopa",
+  "track_number": "track",
   "entry": "BIILLLO",
   "delivery": {
     "ID": 64,
@@ -28,20 +28,6 @@
   "items": [
     {
       "ID": 27,
-      "chrt_id": 9934930,
-      "track_number": "WBILMTESTTRACK",
-      "price": 453,
-      "rid": "ab4219087a764ae0btest",
-      "name": "Mascaras",
-      "sale": 30,
-      "size": "0",
-      "total_price": 317,
-      "nm_id": 2389212,
-      "brand": "Vivienne Sabo",
-      "status": 202
-    },
-    {
-      "ID": 28,
       "chrt_id": 9934930,
       "track_number": "WBILMTESTTRACK",
       "price": 453,
